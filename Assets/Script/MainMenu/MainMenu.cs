@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+
     public void StartNewGame()
     {
         SceneManager.LoadScene("Level 1");
