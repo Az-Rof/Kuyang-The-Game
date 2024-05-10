@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
@@ -18,10 +20,34 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    /// <summary>
+    /// Plays the music for the specified scene when it starts.
+    /// </summary>
     public void Start()
     {
-        playMusic("Theme"); 
+        // Retrieve the music and sfx volumes from PlayerPrefs if they exist
+        if (PlayerPrefs.HasKey("musicVolume"))
+        {
+            // If the music volume is found, set it
+            musicSource.volume = PlayerPrefs.GetFloat("musicVolume");
+        }
+        if (PlayerPrefs.HasKey("sfxVolume"))
+        {
+            // If the sfx volume is found, set it
+            sfxSource.volume = PlayerPrefs.GetFloat("sfxVolume");
+        }
+        // Check which scene is currently active
+        if (SceneManager.GetActiveScene().name == "Main Menu")
+        {
+            // If the scene is the main menu, play the Main Menu Theme music
+            playMusic("MainMenu Theme");
+        }
+        else
+        {
+            // If the scene is not the main menu, do not play music
+        }
     }
+
 
     /// Plays the music with the specified name.
     /// <param name="name">The name of the music sound.</param>

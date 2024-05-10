@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
     Rigidbody2D rb;
     
     public float speed = 100.0f;
+    
+    //Camera's zoom needed!
+    private float zoom;
+    private float zoomMultiplier = 4f;
+    private float zoomMin = 1f;
+    private float zoomMax = 10f;
+    private float velocity = 0f;
+    private float smoothTime = 0.25f;
 
     
     void Awake()
@@ -16,19 +25,22 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Start is called before the first frame update
-    void Start()    {
-        
+    void Start()
+    {
+        // Set the initial zoom of the camera
+        zoom = Camera.main.orthographicSize;
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        pause();
+        
     }
     void FixedUpdate()
     {
         movement();
+        cameraZoom();
         
     }
 
@@ -51,15 +63,13 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(h, v) * speed * Time.deltaTime;
     }
 
-    void pause(){
-        if (Input.GetKeyDown(KeyCode.Escape)){
-            if (Time.timeScale == 0){
-                Time.timeScale = 1;
-            }
-            else{
-                Time.timeScale = 0;
-            }
-        }
-    }
+    /// Zooms in the camera by setting the orthographic size of the main camera to the current value of the zoom variable.
+    void cameraZoom()
+    {   
 
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        zoom -= scroll*zoomMultiplier;
+        zoom = Mathf.Clamp(zoom,zoomMin,zoomMax);
+        Camera.main.orthographicSize = Mathf.SmoothDamp(Camera.main.orthographicSize,zoom,ref velocity,smoothTime);
+    }
 }
