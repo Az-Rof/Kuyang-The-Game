@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - triggerWindrows
+  - Pop-Up
+  - ButtonE pop-up
+  - Exterior
+  - Interior
+  - window
   layers:
   - Default
   - TransparentFX
@@ -11,8 +17,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Interior Layer
+  - Exterior Layer
   - 
   - 
   - 
@@ -40,4 +46,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: New Layer 1
+    uniqueID: 1392489021
+    locked: 0
+  - name: LightWindows
+    uniqueID: 1380911617
     locked: 0

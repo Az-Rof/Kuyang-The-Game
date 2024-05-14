@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     
     public float speed = 100.0f;
-    
+
     //Camera's zoom needed!
     private float zoom;
     private float zoomMultiplier = 4f;
@@ -44,6 +44,10 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    void interact(){
+        Input.GetKeyDown(KeyCode.E);
+    }
+
     void movement()
     {
         float h = Input.GetAxis("Horizontal");
@@ -59,8 +63,13 @@ public class PlayerController : MonoBehaviour
             {
                 transform.localScale = new Vector3(-0.1f, 0.1f, 1);
             }
+            AudioManager.Instance.playSFX("Fly");
+        }
+        else{
+            AudioManager.Instance.stopSFX("Fly");
         }
         rb.velocity = new Vector2(h, v) * speed * Time.deltaTime;
+        
     }
 
     /// Zooms in the camera by setting the orthographic size of the main camera to the current value of the zoom variable.

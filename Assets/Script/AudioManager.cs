@@ -72,12 +72,20 @@ public class AudioManager : MonoBehaviour
 
     // Plays a sound effect based on the passed name. If the sound is not found in the musicSounds array, logs a message. 
     // Otherwise, plays the found sound effect using the sfxSource.
-    public void playSFX () {
-        Sound s = Array.Find(musicSounds,x=>x.name==name);
+    public void playSFX (string name) {
+        Sound s = Array.Find(sfxSounds,x=>x.name==name);
         if (s==null){
             Debug.Log("Sound Not Found");
         }else{
             sfxSource.PlayOneShot(s.audioClip);
+        }
+    }
+    public void stopSFX(string name){
+        Sound s = Array.Find(sfxSounds,x=>x.name==name);
+        if (s==null){
+            Debug.Log("Sound Not Found");
+        }else{
+            sfxSource.Stop();
         }
     }
     /// Adjusts the volume of the music source
