@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class Pause : MonoBehaviour
 {
+    LiveScript liveScript;
     public GameObject pausePanel;
     public GameObject optionPanel;
     private bool isPaused = false;
 
+    void Start()
+    {
+        liveScript = GameObject.FindObjectOfType<LiveScript>();
+    }
     void Update()
     {
         pause();
@@ -17,20 +23,26 @@ public class Pause : MonoBehaviour
 
 
     /// Handles pausing/unpausing the game.
-    void pause(){
+    void pause()
+    {
         // Check if the Escape key was pressed
         // If the game is currently paused, unpause it
-        if (Input.GetKeyDown(KeyCode.Escape)){
-            if (Time.timeScale == 0 && !optionPanel.activeSelf){
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Time.timeScale == 0 && !optionPanel.activeSelf)
+            {
                 Time.timeScale = 1;
                 isPaused = false;
                 // Hide the pause panel if the game is unpaused
-                pausePanel.SetActive(false); 
-            }else if(optionPanel.activeSelf){
+                pausePanel.SetActive(false);
+            }
+            else if (optionPanel.activeSelf)
+            {
                 optionPanel.SetActive(false);
             }
             // If the game is currently running, pause it
-            else{
+            else
+            {
                 Time.timeScale = 0;
                 isPaused = true;
                 // Show the pause panel if the game is paused
@@ -53,8 +65,18 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene("Main Menu");
     }
-    public void RetryGame(){
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    public void RetryGame()
+    {
+        if (PlayerPrefs.GetInt("Lives") <= 0)
+        {
+            liveScript.ResetLives();
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("Level 1");
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }

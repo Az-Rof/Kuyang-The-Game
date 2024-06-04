@@ -9,12 +9,14 @@ public class MainMenu : MonoBehaviour
 
     public void StartNewGame()
     {
+        PlayerPrefs.SetInt("Lives", 5);
         SceneManager.LoadScene("Level 1");
         Time.timeScale = 1;
     }
 
-   public void Exit() {
+    public void Exit()
+    {
         Application.Quit();
-   }
+    }
 }
 

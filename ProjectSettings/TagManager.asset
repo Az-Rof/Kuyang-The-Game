@@ -10,18 +10,21 @@ TagManager:
   - Exterior
   - Interior
   - window
+  - NPC
+  - Collectables
+  - Collectables.Blood
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background Layer
   - Water
   - UI
   - Interior Layer
   - Exterior Layer
   - 
-  - 
-  - 
+  - Door Layer
+  - Player Layer
   - 
   - 
   - 
@@ -44,12 +47,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Backgrounds
+    uniqueID: 1392489021
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: New Layer 1
-    uniqueID: 1392489021
+  - name: Door Layer
+    uniqueID: 1002971939
     locked: 0
-  - name: LightWindows
+  - name: Foregrounds
     uniqueID: 1380911617
     locked: 0

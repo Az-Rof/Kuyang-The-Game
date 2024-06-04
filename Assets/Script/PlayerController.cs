@@ -4,11 +4,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.EventSystems;
+
 
 public class PlayerController : MonoBehaviour
 {
+    //public string[] interactobjek;    , IPointerEnterHandler, IPointerExitHandler
     Rigidbody2D rb;
-    
+    GameObject selectedObject;
     public float speed = 100.0f;
 
     //Camera's zoom needed!
@@ -19,7 +23,8 @@ public class PlayerController : MonoBehaviour
     private float velocity = 0f;
     private float smoothTime = 0.25f;
 
-    
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -27,26 +32,76 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+
         // Set the initial zoom of the camera
         zoom = Camera.main.orthographicSize;
     }
 
 
     // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
     void FixedUpdate()
     {
         movement();
         cameraZoom();
-        
+
+
+        // OnPointerClicked();
     }
 
-    void interact(){
-        Input.GetKeyDown(KeyCode.E);
-    }
+    // public void OnPointerEnter(PointerEventData eventData)
+    // {
+    //     if (selectedObject != null)
+    //     {
+    //         Light2D light2D = selectedObject.GetComponent<ShineOnApproach>().GetComponent<Light2D>();
+    //         if (light2D != null)
+    //         {
+    //             light2D.enabled = true;
+    //         }
+    //     }
+    // }
+
+    // public void OnPointerExit(PointerEventData eventData)
+    // {
+    //     if (selectedObject != null)
+    //     {
+    //         Light2D light2D = selectedObject.GetComponent<ShineOnApproach>().GetComponent<Light2D>();
+    //         if (light2D != null)
+    //         {
+    //             light2D.enabled = false;
+    //         }
+    //     }
+    // }
+
+
+    // void OnPointerClicked()
+    // {
+    //     if (Input.GetMouseButtonDown(0))
+    //     {
+    //         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+    //         if (hit)
+    //         {
+    //             selectedObject = hit.transform.gameObject;
+    //             InteractWithObject(selectedObject);
+    //         }
+    //         else
+    //         {
+    //             selectedObject = null;
+    //         }
+
+    //     }
+    //     else
+    //     {
+
+    //     }
+    // }
+
+    // private void InteractWithObject(GameObject objectToInteract)
+    // {
+    //     // Add your interaction logic here
+    //     Debug.Log("Interacting with " + objectToInteract.name);
+    // }
+
 
     void movement()
     {
@@ -65,20 +120,21 @@ public class PlayerController : MonoBehaviour
             }
             AudioManager.Instance.playSFX("Fly");
         }
-        else{
+        else
+        {
             AudioManager.Instance.stopSFX("Fly");
         }
         rb.velocity = new Vector2(h, v) * speed * Time.deltaTime;
-        
+
     }
 
     /// Zooms in the camera by setting the orthographic size of the main camera to the current value of the zoom variable.
     void cameraZoom()
-    {   
+    {
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        zoom -= scroll*zoomMultiplier;
-        zoom = Mathf.Clamp(zoom,zoomMin,zoomMax);
-        Camera.main.orthographicSize = Mathf.SmoothDamp(Camera.main.orthographicSize,zoom,ref velocity,smoothTime);
+        zoom -= scroll * zoomMultiplier;
+        zoom = Mathf.Clamp(zoom, zoomMin, zoomMax);
+        Camera.main.orthographicSize = Mathf.SmoothDamp(Camera.main.orthographicSize, zoom, ref velocity, smoothTime);
     }
 }
