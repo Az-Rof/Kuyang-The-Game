@@ -7,7 +7,6 @@ public class NPCBehaviour : MonoBehaviour
     private bool wasSuspicious = false;
     public float suspicionThreshold = 3f;
     public BoxCollider2D suspicionZone;
-    public GameObject player;
     public Vector2 lastKnownPlayerPosition;
     public float speed = 2.0f;
 
