@@ -13,6 +13,7 @@ public class Scoring : MonoBehaviour
             Collectables.collectedCollectables++; // Increase the number of collected collectables
             Collectables collectables = FindObjectOfType<Collectables>(); // Obtain a reference to the Collectables object
             collectables.GetComponent<Slider>().value = Collectables.collectedCollectables; // Update the slider value
+            AudioManager.Instance.playSFX("Collect Blood");
         }
     }
 }

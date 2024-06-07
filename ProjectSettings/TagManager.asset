@@ -22,10 +22,10 @@ TagManager:
   - UI
   - Interior Layer
   - Exterior Layer
-  - 
+  - NPC Layer
   - Door Layer
-  - Player Layer
-  - 
+  - Invisible Player Layer
+  - Player
   - 
   - 
   - 
@@ -50,12 +50,24 @@ TagManager:
   - name: Backgrounds
     uniqueID: 1392489021
     locked: 0
+  - name: Exterior Layer
+    uniqueID: 3288104861
+    locked: 0
+  - name: Interior Layer
+    uniqueID: 1380911617
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Door Layer
+  - name: Game Object
     uniqueID: 1002971939
     locked: 0
-  - name: Foregrounds
-    uniqueID: 1380911617
+  - name: NPC
+    uniqueID: 374941691
+    locked: 0
+  - name: Player
+    uniqueID: 1215907317
+    locked: 0
+  - name: Collectables.Blood
+    uniqueID: 1899095131
     locked: 0

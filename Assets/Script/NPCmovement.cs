@@ -86,7 +86,7 @@ public class NPCMovement : MonoBehaviour
     void Animator()
     {
         // Jika NPC sedang idle
-        if (isIdle)
+        if (isIdle && !npcBehaviour.isSuspicious)
         {
             animator.SetBool("isIdle", true);
 
