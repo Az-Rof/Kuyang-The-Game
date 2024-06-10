@@ -13,6 +13,7 @@ TagManager:
   - NPC
   - Collectables
   - Collectables.Blood
+  - HidingSpot
   layers:
   - Default
   - TransparentFX

@@ -26,8 +26,10 @@ public class PlayerController : MonoBehaviour
     private float smoothTime = 0.25f;
 
     [SerializeField] GameObject invisible;
-
     public bool isInvisible;
+
+    public bool isHiding;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -38,12 +40,14 @@ public class PlayerController : MonoBehaviour
         // Set the initial zoom of the camera
         zoom = Camera.main.orthographicSize;
         isInvisible = false;
+        isHiding = false;
     }
 
 
     private void Update()
     {
         beinvisible();
+
     }
     // Update is called once per frame
 
@@ -51,89 +55,39 @@ public class PlayerController : MonoBehaviour
     {
         movement();
         cameraZoom();
-
-
-        // OnPointerClicked();
+        behiding();
     }
 
-    // public void OnPointerEnter(PointerEventData eventData)
-    // {
-    //     if (selectedObject != null)
-    //     {
-    //         Light2D light2D = selectedObject.GetComponent<ShineOnApproach>().GetComponent<Light2D>();
-    //         if (light2D != null)
-    //         {
-    //             light2D.enabled = true;
-    //         }
-    //     }
-    // }
 
-    // public void OnPointerExit(PointerEventData eventData)
-    // {
-    //     if (selectedObject != null)
-    //     {
-    //         Light2D light2D = selectedObject.GetComponent<ShineOnApproach>().GetComponent<Light2D>();
-    //         if (light2D != null)
-    //         {
-    //             light2D.enabled = false;
-    //         }
-    //     }
-    // }
-
-
-    // void OnPointerClicked()
-    // {
-    //     if (Input.GetMouseButtonDown(0))
-    //     {
-    //         RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-    //         if (hit)
-    //         {
-    //             selectedObject = hit.transform.gameObject;
-    //             InteractWithObject(selectedObject);
-    //         }
-    //         else
-    //         {
-    //             selectedObject = null;
-    //         }
-
-    //     }
-    //     else
-    //     {
-
-    //     }
-    // }
-
-    // private void InteractWithObject(GameObject objectToInteract)
-    // {
-    //     // Add your interaction logic here
-    //     Debug.Log("Interacting with " + objectToInteract.name);
-    // }
 
 
     void movement()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        if (!isHiding)
+        {
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
 
-        if (h != 0)
-        {
-            if (h > 0)
+            if (h != 0)
             {
-                transform.localScale = new Vector3(0.1f, 0.1f, 1);
-                invisible.transform.localScale = new Vector3(10, 10, 0);
+                if (h > 0)
+                {
+                    transform.localScale = new Vector3(0.1f, 0.1f, 1);
+                    invisible.transform.localScale = new Vector3(10, 10, 0);
+                }
+                else if (h < 0)
+                {
+                    transform.localScale = new Vector3(-0.1f, 0.1f, 1);
+                    invisible.transform.localScale = new Vector3(10, 10, 0);
+                }
+                // AudioManager.Instance.playSFX("Fly");
             }
-            else if (h < 0)
+            else
             {
-                transform.localScale = new Vector3(-0.1f, 0.1f, 1);
-                invisible.transform.localScale = new Vector3(10, 10, 0);
+                // AudioManager.Instance.stopSFX("Fly");
             }
-            // AudioManager.Instance.playSFX("Fly");
+            rb.velocity = new Vector2(h, v) * speed * Time.deltaTime;
         }
-        else
-        {
-            // AudioManager.Instance.stopSFX("Fly");
-        }
-        rb.velocity = new Vector2(h, v) * speed * Time.deltaTime;
 
     }
 
@@ -161,4 +115,18 @@ public class PlayerController : MonoBehaviour
             invisible.SetActive(false);
         }
     }
+    void behiding()
+    {
+        if (isHiding)
+        {
+            // Make player invisible
+            GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            // Make player visible
+            GetComponent<SpriteRenderer>().enabled = true;
+        }
+    }
+
 }

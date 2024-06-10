@@ -20,9 +20,9 @@ public class LiveReduceTrigger : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         GameObject player = GameObject.FindWithTag("Player");
-        if (other.CompareTag("Player"))
+        if (player != null && other.CompareTag("Player") && !other.GetComponent<PlayerController>().isHiding)
         {
-            if (other.GetComponent<PlayerController>().isInvisible == false)
+            if (!other.GetComponent<PlayerController>().isInvisible || !player.GetComponent<PlayerController>().isHiding)
             {
                 liveScript.ReduceLives();
             }

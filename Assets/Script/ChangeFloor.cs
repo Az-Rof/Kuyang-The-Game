@@ -10,7 +10,7 @@ using Vector2 = UnityEngine.Vector2;
 public class ChangeFloor : MonoBehaviour
 {
     public GameObject connectFloor;
-    Vector2 newFloorPosition;
+    public Vector2 newFloorPosition;
     void Start()
     {
         newFloorPosition = connectFloor.transform.position;

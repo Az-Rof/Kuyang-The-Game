@@ -15,9 +15,17 @@ public class PlayerInteractable : MonoBehaviour
     }
     void OnTriggerStay2D(Collider2D other)
     {
+        bool isHiding = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().isHiding;
         if (other.tag == "Player")
         {
-            light2D.enabled = true;
+            if (isHiding)
+            {
+                light2D.enabled = false;
+            }
+            else if (!isHiding)
+            {
+                light2D.enabled = true;
+            }
         }
     }
 

@@ -1,23 +1,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-    
-    public static AudioManager Instance;
-    public Sound[] musicSounds,sfxSounds;
-    public AudioSource musicSource,sfxSource;
 
-    public void Awake(){
-        if(Instance == null){
-            Instance=this;
+    public static AudioManager Instance;
+    public Sound[] musicSounds, sfxSounds;
+    public AudioSource musicSource, sfxSource;
+
+    public void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
             DontDestroyOnLoad(gameObject);
-        }else{
+        }
+        else
+        {
             Destroy(gameObject);
         }
     }
@@ -56,7 +59,7 @@ public class AudioManager : MonoBehaviour
     {
         // Find the sound with the specified name
         Sound s = Array.Find(musicSounds, x => x.name == name);
-            
+
         // If the sound is not found, log a message
         if (s == null)
         {
@@ -64,37 +67,47 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-             // Set the clip of the music source to the audio clip of the sound
-            musicSource.clip = s.audioClip; 
-             // Play the music
+            // Set the clip of the music source to the audio clip of the sound
+            musicSource.clip = s.audioClip;
+            // Play the music
             musicSource.Play();
         }
     }
 
     // Plays a sound effect based on the passed name. If the sound is not found in the musicSounds array, logs a message. 
     // Otherwise, plays the found sound effect using the sfxSource.
-    public void playSFX (string name) {
-        Sound s = Array.Find(sfxSounds,x=>x.name==name);
-        if (s==null){
+    public void playSFX(string name)
+    {
+        Sound s = Array.Find(sfxSounds, x => x.name == name);
+        if (s == null)
+        {
             Debug.Log("Sound Not Found");
-        }else{
+        }
+        else
+        {
             sfxSource.PlayOneShot(s.audioClip);
         }
     }
-    public void stopSFX(string name){
-        Sound s = Array.Find(sfxSounds,x=>x.name==name);
-        if (s==null){
+    public void stopSFX(string name)
+    {
+        Sound s = Array.Find(sfxSounds, x => x.name == name);
+        if (s == null)
+        {
             Debug.Log("Sound Not Found");
-        }else{
+        }
+        else
+        {
             sfxSource.Stop();
         }
     }
     /// Adjusts the volume of the music source
-    public void musicVolume(float volume) {
-        musicSource.volume=volume;
+    public void musicVolume(float volume)
+    {
+        musicSource.volume = volume;
     }
-    public void sfxVolume(float volume) {
-        sfxSource.volume=volume;
+    public void sfxVolume(float volume)
+    {
+        sfxSource.volume = volume;
     }
 
 }

@@ -19,11 +19,21 @@ public class NPCBehaviour : MonoBehaviour
 
     void Update()
     {
+        NPCToBaby();
+        NPCSus();
+    }
+    public void NPCToBaby()
+    {
+    }
+
+    void NPCSus()
+    {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             // Meningkatkan tingkat kecurigaan jika pemain berada di SusZone
-            if (suspicionZone.bounds.Contains(player.transform.position) && !player.GetComponent<PlayerController>().isInvisible)
+            if (suspicionZone.bounds.Contains(player.transform.position)
+            && !player.GetComponent<PlayerController>().isInvisible && !player.GetComponent<PlayerController>().isHiding)
             {
                 suspicionLevel += Time.deltaTime;
                 lastKnownPlayerPosition = player.transform.position;
