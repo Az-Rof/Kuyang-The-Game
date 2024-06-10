@@ -1491,6 +1491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectFloor: {fileID: 1946475700}
+  newFloorPosition: {x: 0, y: 0}
 --- !u!61 &163138992
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2136,6 +2137,12 @@ MonoBehaviour:
   suspicionThreshold: 2
   suspicionZone: {fileID: 940278124}
   speed: 2
+  waypoints:
+  - {fileID: 1709555721}
+  - {fileID: 1323467674}
+  - {fileID: 1085403573}
+  currentWaypoint: 0
+  isIdle: 1
 --- !u!114 &257880462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3040,9 +3047,10 @@ GameObject:
   - component: {fileID: 340996886}
   - component: {fileID: 340996887}
   - component: {fileID: 340996888}
+  - component: {fileID: 340996890}
   m_Layer: 6
   m_Name: Bayi Tidur
-  m_TagString: Untagged
+  m_TagString: Baby
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3056,7 +3064,7 @@ Transform:
   m_GameObject: {fileID: 340996885}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.1846848, y: -3.494409, z: 0}
+  m_LocalPosition: {x: -9.723, y: -3.035, z: 0}
   m_LocalScale: {x: 0.03150045, y: 0.03150045, z: 0.047250677}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3100,8 +3108,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 374941691
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e7075b5ecb4dca54b9033226c8c8eadd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -3126,7 +3134,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb911424f8b683489575ffb87ac5d23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSleeping: 1
+  isSleeping: 0
+  minSleepDuration: 5
+  maxSleepDuration: 10
+--- !u!61 &340996890
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340996885}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 40.931713, y: 28.94}
+    newSize: {x: 40.931713, y: 28.94}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 40.931713, y: 28.94}
+  m_EdgeRadius: 0
 --- !u!1 &346098955
 GameObject:
   m_ObjectHideFlags: 0
@@ -6267,6 +6322,12 @@ MonoBehaviour:
   suspicionThreshold: 2
   suspicionZone: {fileID: 269588550}
   speed: 2
+  waypoints:
+  - {fileID: 951383748}
+  - {fileID: 1620505428}
+  - {fileID: 1450828853}
+  currentWaypoint: 0
+  isIdle: 1
 --- !u!1 &1074941634
 GameObject:
   m_ObjectHideFlags: 0
@@ -12630,6 +12691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectFloor: {fileID: 163138988}
+  newFloorPosition: {x: 0, y: 0}
 --- !u!61 &1897426473
 BoxCollider2D:
   m_ObjectHideFlags: 0
