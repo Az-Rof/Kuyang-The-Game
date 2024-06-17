@@ -27,7 +27,7 @@ public class Pause : MonoBehaviour
     {
         // Check if the Escape key was pressed
         // If the game is currently paused, unpause it
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !liveScript.GameOver.activeSelf)
         {
             if (Time.timeScale == 0 && !optionPanel.activeSelf)
             {

@@ -8,9 +8,9 @@ public class LiveScript : MonoBehaviour
 {
 
     //Lives needed !
-    [SerializeField] TextMeshProUGUI livesText, livesLeft, CollectedCollectable;
+    [SerializeField] TextMeshProUGUI livesText, livesLeft, livesLeft2, CollectedCollectable, CollectedCollectable2;
     // [SerializeField] bool initLive = false;
-    [SerializeField] GameObject GameOver;
+    public GameObject GameOver;
     public static int lives
     {
         get; internal set;
@@ -37,13 +37,10 @@ public class LiveScript : MonoBehaviour
 
     void Update()
     {
-        // if (initLive == true)
-        // {
-        //     ResetLives();
-        //     initLive = false;
-        // }
         livesText.text = PlayerPrefs.GetInt("Lives") + " / 5";
         livesLeft.text = "Lives Left :   " + PlayerPrefs.GetInt("Lives") + " / 5";
+        livesLeft2.text = "Lives Left :   " + PlayerPrefs.GetInt("Lives") + " / 5";
         CollectedCollectable.text = "Bloods Collected in this level :   " + Collectables.collectedCollectables + " / " + Collectables.totalCollectables;
+        CollectedCollectable2.text = "Bloods Collected in this level :   " + Collectables.collectedCollectables + " / " + Collectables.totalCollectables;
     }
 }
