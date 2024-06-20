@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,16 +23,22 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
     public bool isIdle = true; // Status apakah NPC sedang idle atau tidak
 
 
-    Vector2 babyPosition;
     //public GameObject baby;
 
     // Keputusan untuk memakai tangga/lift ChangeFloor
     public bool wantChangeLevel;
+    List<Vector2> connectFloorPositions;
 
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        connectFloorPositions = new List<Vector2>();
+        ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
+        foreach (ChangeFloor changeFloor in changeFloors)
+        {
+            connectFloorPositions.Add(changeFloor.connectFloor.transform.position);
+        }
     }
 
 
@@ -58,28 +65,41 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
     void ChangeLevel()
     {
         ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
-        // NPC deteksi changefloor.connectFloor yang sebanding dengan tujuan
+        Array.Sort(changeFloors, (a, b) => a.order.CompareTo(b.order));
         if (Mathf.Abs(waypoints[currentWaypoint].transform.position.y - transform.position.y) >= 3f)
         {
+            ChangeFloor closestChangeFloor = null;
+            float closestDistance = float.MaxValue;
+
             foreach (ChangeFloor changeFloor in changeFloors)
             {
-                float yDifference = Mathf.Abs(changeFloor.connectFloor.transform.position.y - waypoints[currentWaypoint].transform.position.y);
-                if (yDifference <= 2f)
+                if (connectFloorPositions.Contains(changeFloor.connectFloor.transform.position))
                 {
-                    Vector2 direction = new Vector2(changeFloor.transform.position.x - transform.position.x, 0).normalized;
-                    GetComponent<Rigidbody2D>().velocity = direction * speed;
-                    if (direction.x < 0)
+                    float distance = Vector2.Distance(changeFloor.transform.position, transform.position);
+                    if (distance < closestDistance)
                     {
-                        GetComponent<SpriteRenderer>().flipX = true;
+                        closestDistance = distance;
+                        closestChangeFloor = changeFloor;
                     }
-                    else if (direction.x > 0)
-                    {
-                        GetComponent<SpriteRenderer>().flipX = false;
-                    }
+                }
+            }
+
+            if (closestChangeFloor != null)
+            {
+                Vector2 direction = new Vector2(closestChangeFloor.transform.position.x - transform.position.x, 0).normalized;
+                GetComponent<Rigidbody2D>().velocity = direction * speed;
+                if (direction.x < 0)
+                {
+                    GetComponent<SpriteRenderer>().flipX = true;
+                }
+                else if (direction.x > 0)
+                {
+                    GetComponent<SpriteRenderer>().flipX = false;
                 }
             }
         }
     }
+
     void NPCSus()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
