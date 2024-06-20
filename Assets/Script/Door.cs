@@ -11,13 +11,12 @@ public class Door : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "NPC")
+        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
         {
             colliderToDeactivate.enabled = false;
             Close.SetActive(false);
             Open.SetActive(true);
         }
-
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -38,7 +37,7 @@ public class Door : MonoBehaviour
             }
 
         }
-        if (other.tag == "NPC")
+        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
         {
             colliderToDeactivate.enabled = false;
             Close.SetActive(false);
@@ -47,7 +46,7 @@ public class Door : MonoBehaviour
     }
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag == "NPC")
+        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
         {
             colliderToDeactivate.enabled = true;
             Close.SetActive(true);

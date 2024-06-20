@@ -8,13 +8,18 @@ public class Pause : MonoBehaviour
 {
     LiveScript liveScript;
     public GameObject pausePanel;
-    public GameObject optionPanel;
+    public GameObject optionPanel, tutorialPanel;
     private bool isPaused = false;
 
-    void Start()
+    void Awake()
     {
         liveScript = GameObject.FindObjectOfType<LiveScript>();
+        if (liveScript == null)
+        {
+            Debug.LogError("No LiveScript found in the scene.");
+        }
     }
+
     void Update()
     {
         pause();
@@ -38,7 +43,15 @@ public class Pause : MonoBehaviour
             }
             else if (optionPanel.activeSelf)
             {
-                optionPanel.SetActive(false);
+                if (tutorialPanel.activeSelf)
+                {
+                    tutorialPanel.SetActive(false);
+                }
+                else
+                {
+                    optionPanel.SetActive(false);
+                }
+
             }
             // If the game is currently running, pause it
             else
@@ -67,16 +80,25 @@ public class Pause : MonoBehaviour
     }
     public void RetryGame()
     {
-        if (PlayerPrefs.GetInt("Lives") <= 0)
+        LiveScript liveScript = GameObject.FindObjectOfType<LiveScript>();
+        if (liveScript != null)
         {
-            liveScript.ResetLives();
-            Time.timeScale = 1f;
-            SceneManager.LoadScene("Level 1");
+            int lives = PlayerPrefs.GetInt("Lives");
+            if (lives <= 0)
+            {
+                liveScript.ResetLives();
+                Time.timeScale = 1f;
+                SceneManager.LoadScene("Level 1");
+            }
+            else
+            {
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
         else
         {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Debug.LogError("LiveScript is null.");
         }
     }
 }

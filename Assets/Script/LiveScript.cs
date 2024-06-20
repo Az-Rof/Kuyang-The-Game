@@ -9,9 +9,9 @@ public class LiveScript : MonoBehaviour
 
     //Lives needed !
     [SerializeField] TextMeshProUGUI livesText, livesLeft, livesLeft2, CollectedCollectable, CollectedCollectable2;
-    // [SerializeField] bool initLive = false;
+
     public GameObject GameOver;
-    public static int lives
+    public static int li0ves
     {
         get; internal set;
     }
@@ -20,6 +20,11 @@ public class LiveScript : MonoBehaviour
         livesText = GetComponent<TextMeshProUGUI>();
 
     }
+    void Awake()
+    {
+
+    }
+
     public void ResetLives()
     {
         PlayerPrefs.SetInt("Lives", 5);

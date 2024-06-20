@@ -6,6 +6,7 @@ public class ChangeFloor : MonoBehaviour
 {
     public GameObject connectFloor;
     public Vector2 newFloorPosition;
+    private Rigidbody2D otherRigidbody;
 
     void Start()
     {
@@ -23,19 +24,42 @@ public class ChangeFloor : MonoBehaviour
         {
             other.transform.position = newFloorPosition;
         }
-        if (other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
+        if (other != null && other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
         {
-            other.transform.position = newFloorPosition;
+            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
             other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
+            other.transform.position = newFloorPosition;
+        }
+        if (other != null && other.tag == "NPCNoBaby" && other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel)
+        {
+            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
+            other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel = false;
+            other.transform.position = newFloorPosition;
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
+        if (other != null && other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
         {
-            other.transform.position = newFloorPosition;
+            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
             other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
+            other.transform.position = newFloorPosition;
+        }
+        if (other != null && other.tag == "NPCNoBaby" && other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel)
+        {
+            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
+            other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel = false;
+            other.transform.position = newFloorPosition;
         }
     }
+
+    // IEnumerator ChangeLevelWithDelay(GameObject other)
+    // {
+    //     other.GetComponent<SpriteRenderer>().enabled = false;
+    //     yield return new WaitForSeconds(1.5f);
+    //     other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
+    //     other.transform.position = newFloorPosition;
+    //     other.GetComponent<SpriteRenderer>().enabled = true;
+    // }
 }

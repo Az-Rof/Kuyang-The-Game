@@ -9,8 +9,8 @@ public class AudioManager : MonoBehaviour
 {
 
     public static AudioManager Instance;
-    public Sound[] musicSounds, sfxSounds;
-    public AudioSource musicSource, sfxSource;
+    public Sound[] musicSounds, sfxSounds, Lsfxsounds;
+    public AudioSource musicSource, sfxSource, LsfxSource;
 
     public void Awake()
     {
@@ -24,9 +24,7 @@ public class AudioManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    /// <summary>
-    /// Plays the music for the specified scene when it starts.
-    /// </summary>
+
     public void Start()
     {
         // Retrieve the music and sfx volumes from PlayerPrefs if they exist
@@ -44,11 +42,12 @@ public class AudioManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Main Menu")
         {
             // If the scene is the main menu, play the Main Menu Theme music
-            playMusic("MainMenu Theme");
+            playMusic("MainMenu Music");
         }
         else
         {
             // If the scene is not the main menu, do not play music
+            playMusic("InGame Music");
         }
     }
 
@@ -86,8 +85,24 @@ public class AudioManager : MonoBehaviour
         else
         {
             sfxSource.PlayOneShot(s.audioClip);
+            // sfxSource.clip = s.audioClip;
+            // sfxSource.Play();
         }
     }
+    public void playLSFX(string name)
+    {
+        Sound s = Array.Find(Lsfxsounds, x => x.name == name);
+        if (s == null)
+        {
+            Debug.Log("Sound Not Found");
+        }
+        else
+        {
+            LsfxSource.clip = s.audioClip;
+            LsfxSource.Play();
+        }
+    }
+
     public void stopSFX(string name)
     {
         Sound s = Array.Find(sfxSounds, x => x.name == name);
@@ -100,6 +115,7 @@ public class AudioManager : MonoBehaviour
             sfxSource.Stop();
         }
     }
+
     /// Adjusts the volume of the music source
     public void musicVolume(float volume)
     {

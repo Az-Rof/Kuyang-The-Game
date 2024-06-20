@@ -12,7 +12,7 @@ public class NPCBehaviour : MonoBehaviour
     public BoxCollider2D suspicionZone;
     // [SerializeField] GameObject player;
     Vector2 lastKnownPlayerPosition;
-    public float speed = 2.0f;
+    public float speed = 3.0f;
 
 
     Animator animator;
@@ -23,7 +23,8 @@ public class NPCBehaviour : MonoBehaviour
     public bool isIdle = true; // Status apakah NPC sedang idle atau tidak
 
 
-
+    Vector2 babyPosition;
+    //public GameObject baby;
 
     // Keputusan untuk memakai tangga/lift ChangeFloor
     public bool wantChangeLevel;
@@ -38,15 +39,14 @@ public class NPCBehaviour : MonoBehaviour
     void Update()
     {
         GameObject baby = GameObject.FindGameObjectWithTag("Baby");
+        NPCToBaby();
 
         if (!wantChangeLevel)
         {
-            NPCToBaby();
             NPCSus();
-
         }
 
-        if (!isSuspicious && baby.GetComponent<Baby_script>().isSleeping)
+        if (!isSuspicious || baby != null && baby.GetComponent<BabyScript>().isSleeping)
         {
             patrolling();
         }
@@ -55,23 +55,54 @@ public class NPCBehaviour : MonoBehaviour
         {
             ChangeLevel();
         }
+
         Animator();
     }
 
     void ChangeLevel()
     {
-        //GameObject baby = GameObject.FindGameObjectWithTag("Baby");
+        GameObject baby = GameObject.FindGameObjectWithTag("Baby");
+        ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
         // NPC deteksi changefloor.connectFloor yang sebanding dengan tujuan
-        if (MathF.Abs(waypoints[currentWaypoint].transform.position.y - transform.position.y) >= 1f)
+        if (MathF.Abs(waypoints[currentWaypoint].transform.position.y - transform.position.y) >= 3f && baby.GetComponent<BabyScript>().isSleeping)
         {
-            ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
             foreach (ChangeFloor changeFloor in changeFloors)
             {
                 float yDifference = Mathf.Abs(changeFloor.connectFloor.transform.position.y - waypoints[currentWaypoint].transform.position.y);
+                if (yDifference <= 2f)
+                {
+                    Vector2 direction = new Vector2(changeFloor.transform.position.x - transform.position.x, 0).normalized;
+                    GetComponent<Rigidbody2D>().velocity = direction * speed;
+                    if (direction.x < 0)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = true;
+                    }
+                    else if (direction.x > 0)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = false;
+                    }
+                }
+            }
+        }
+
+
+        if (MathF.Abs(babyPosition.y - transform.position.y) >= 1f && baby != null && !baby.GetComponent<BabyScript>().isSleeping)
+        {
+            foreach (ChangeFloor changeFloor in changeFloors)
+            {
+                float yDifference = Mathf.Abs(changeFloor.connectFloor.transform.position.y - babyPosition.y);
                 if (yDifference <= 1f)
                 {
                     Vector2 direction = new Vector2(changeFloor.transform.position.x - transform.position.x, 0).normalized;
                     GetComponent<Rigidbody2D>().velocity = direction * speed;
+                    if (direction.x < 0)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = true;
+                    }
+                    else if (direction.x > 0)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = false;
+                    }
                 }
             }
         }
@@ -81,11 +112,10 @@ public class NPCBehaviour : MonoBehaviour
     void NPCToBaby()
     {
         GameObject baby = GameObject.FindGameObjectWithTag("Baby");
-
-        if (baby != null && !baby.GetComponent<Baby_script>().isSleeping)
+        if (baby != null && !baby.GetComponent<BabyScript>().isSleeping)
         {
             // Dapatkan posisi Baby
-            Vector2 babyPosition = baby.transform.position;
+            babyPosition = baby.transform.position;
 
             // Hitung arah dari NPC ke Baby
             Vector2 direction = babyPosition - (Vector2)transform.position;
@@ -100,9 +130,18 @@ public class NPCBehaviour : MonoBehaviour
                 GetComponent<SpriteRenderer>().flipX = true; // Menghadap ke kiri
             }
 
-            // Gerakkan NPC menuju posisi Baby hanya pada sumbu X
-            transform.position = Vector2.MoveTowards(new Vector2(transform.position.x, transform.position.y),
+
+
+            // Gerakkan NPC menuju bayi
+            if (Mathf.Abs(transform.position.y - babyPosition.y) >= 2f) // Baby.Y => NPC.Y 
+            {
+                wantChangeLevel = true;
+            }
+            else // Gerakkan NPC menuju posisi Baby hanya pada sumbu X
+            {
+                transform.position = Vector2.MoveTowards(new Vector2(transform.position.x, transform.position.y),
             new Vector2(babyPosition.x, transform.position.y), speed * Time.deltaTime);
+            }
 
             // Jika posisi x NPC sama dengan posisi x Baby, aktifkan animator "isIdle"
             if (Mathf.Approximately(transform.position.x, babyPosition.x))
@@ -163,7 +202,6 @@ public class NPCBehaviour : MonoBehaviour
                 }
             }
         }
-
         wasSuspicious = isSuspicious;
     }
 
@@ -184,7 +222,7 @@ public class NPCBehaviour : MonoBehaviour
             }
             GetComponent<SpriteRenderer>().flipX = false;
         }
-        else if (!isIdle && baby.GetComponent<Baby_script>().isSleeping) // Jika NPC tidak idle
+        else if (!isIdle && baby.GetComponent<BabyScript>().isSleeping) // Jika NPC tidak idle
         {
             // Dapatkan posisi titik tujuan saat ini
             Vector2 targetPosition = waypoints[currentWaypoint].position;
@@ -201,19 +239,6 @@ public class NPCBehaviour : MonoBehaviour
             {
                 GetComponent<SpriteRenderer>().flipX = true;// Menghadap ke kiri
             }
-
-            // Prioritas Y level
-            // if (Mathf.Abs(transform.position.y - targetPosition.y) >= 2f)
-            // {
-            //     transform.position = new Vector2(transform.position.x, Mathf.MoveTowards(transform.position.y, targetPosition.y, speed * Time.deltaTime));
-            // }
-            // else
-            // {
-            //     transform.position = new Vector2(Mathf.MoveTowards(transform.position.x, targetPosition.x, speed * Time.deltaTime), transform.position.y);
-            // }
-
-
-
             // Gerakkan NPC menuju titik tujuan
             if (Mathf.Abs(transform.position.y - targetPosition.y) >= 2f)
             {
@@ -227,7 +252,7 @@ public class NPCBehaviour : MonoBehaviour
 
 
             // Jika NPC telah mencapai titik tujuan
-            if (Vector2.Distance(transform.position, targetPosition) < 0.5f)
+            if (Vector2.Distance(transform.position, targetPosition) < 1f)
             {
                 isIdle = true; // Atur status NPC menjadi idle
                 currentWaypoint++; // Pindah ke titik tujuan berikutnya
