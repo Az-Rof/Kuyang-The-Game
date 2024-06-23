@@ -6,11 +6,14 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    void Start()
+    {
 
+    }
     public void StartNewGame()
     {
         PlayerPrefs.SetInt("Lives", 5);
-        SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("CutScene_Intro");
         Time.timeScale = 1;
     }
 

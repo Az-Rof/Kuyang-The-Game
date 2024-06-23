@@ -25,6 +25,19 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "CutScene_Intro")
+        {
+            musicSource.Stop();
+            LsfxSource.Stop();
+        }
+        if (GameObject.FindWithTag("Baby") == null)
+        {
+            LsfxSource.Stop();
+        }
+    }
+
     public void Start()
     {
         // Retrieve the music and sfx volumes from PlayerPrefs if they exist
@@ -43,15 +56,18 @@ public class AudioManager : MonoBehaviour
         {
             // If the scene is the main menu, play the Main Menu Theme music
             playMusic("MainMenu Music");
+            LsfxSource.Stop();
+        }
+        else if (SceneManager.GetActiveScene().name == "CutScene_Intro")
+        {
+            musicSource.Stop();
+            LsfxSource.Stop();
         }
         else
         {
             // If the scene is not the main menu, do not play music
-            playMusic("InGame Music");
         }
     }
-
-
     /// Plays the music with the specified name.
     /// <param name="name">The name of the music sound.</param>
     public void playMusic(string name)

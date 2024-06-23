@@ -15,6 +15,7 @@ TagManager:
   - Collectables.Blood
   - HidingSpot
   - Baby
+  - NPCNoBaby
   layers:
   - Default
   - TransparentFX

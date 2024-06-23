@@ -101,4 +101,57 @@ public class Pause : MonoBehaviour
             Debug.LogError("LiveScript is null.");
         }
     }
+    public void pauseButton()
+    {
+        if (!liveScript.GameOver.activeSelf)
+        {
+            if (Time.timeScale == 0 && !optionPanel.activeSelf)
+            {
+                Time.timeScale = 1;
+                isPaused = false;
+                // Hide the pause panel if the game is unpaused
+                pausePanel.SetActive(false);
+            }
+            else if (optionPanel.activeSelf)
+            {
+                if (tutorialPanel.activeSelf)
+                {
+                    tutorialPanel.SetActive(false);
+                }
+                else
+                {
+                    optionPanel.SetActive(false);
+                }
+
+            }
+            // If the game is currently running, pause it
+            else
+            {
+                Time.timeScale = 0;
+                isPaused = true;
+                // Show the pause panel if the game is paused
+                if (isPaused)
+                {
+                    pausePanel.SetActive(true);
+                }
+            }
+        }
+    }
+    public void settingButton()
+    {
+        optionPanel.SetActive(true);
+        Time.timeScale = 0;
+        isPaused = true;
+        if (optionPanel.activeSelf)
+        {
+            if (tutorialPanel.activeSelf)
+            {
+                tutorialPanel.SetActive(false);
+            }
+            else
+            {
+                optionPanel.SetActive(true);
+            }
+        }
+    }
 }

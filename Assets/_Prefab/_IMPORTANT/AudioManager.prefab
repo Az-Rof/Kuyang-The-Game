@@ -48,10 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSounds:
-  - name: InGame Music
-    audioClip: {fileID: 8300000, guid: 36effab3f9a3ce6479a5e6232910964b, type: 3}
   - name: MainMenu Music
-    audioClip: {fileID: 8300000, guid: 1d9222e77a773c34f9fec4c69d83c4ca, type: 3}
+    audioClip: {fileID: 8300000, guid: 36effab3f9a3ce6479a5e6232910964b, type: 3}
   sfxSounds:
   - name: Collect Blood
     audioClip: {fileID: 8300000, guid: 1fb0cd41c52b06c49ab8184ab90f4b71, type: 3}

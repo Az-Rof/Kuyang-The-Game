@@ -10,6 +10,7 @@ public class FinishLevel : MonoBehaviour
     private int level;
     private bool isKidnapped;
     public GameObject levelfinish;
+    public GameObject NextUpdate;
 
     private void Start()
     {
@@ -17,6 +18,10 @@ public class FinishLevel : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         level = int.Parse(sceneName.Replace("Level ", ""));
         AudioManager.Instance.LsfxSource.Stop();
+    }
+    void Update()
+    {
+
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -51,6 +56,14 @@ public class FinishLevel : MonoBehaviour
     {
         SceneManager.LoadScene("Level " + (++level));
         Time.timeScale = 1f;
+        if (SceneManager.GetActiveScene().name == "Level 3")
+        {
+            if (NextUpdate != null)
+            {
+                NextUpdate.SetActive(true);
+                Time.timeScale = 1f;
+            }
+        }
     }
 
 }

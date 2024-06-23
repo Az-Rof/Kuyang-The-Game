@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
         zoom = Camera.main.orthographicSize;
         isInvisible = false;
         isHiding = false;
+        AudioManager.Instance.playMusic("MainMenu Music");
     }
 
 
@@ -128,5 +129,6 @@ public class PlayerController : MonoBehaviour
             GetComponent<SpriteRenderer>().enabled = true;
         }
     }
+
 
 }

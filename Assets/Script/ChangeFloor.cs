@@ -5,8 +5,10 @@ using UnityEngine;
 public class ChangeFloor : MonoBehaviour
 {
     public GameObject connectFloor;
-    public Vector2 newFloorPosition;
-    private Rigidbody2D otherRigidbody;
+    Vector2 newFloorPosition;
+    public int order;
+    private const float NPC_COOLDOWN = 2f;
+    private Dictionary<NPCBehaviour, float> npcCooldowns = new Dictionary<NPCBehaviour, float>();
 
     void Start()
     {
@@ -20,46 +22,30 @@ public class ChangeFloor : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other.tag == "Player" && Input.GetKeyDown(KeyCode.E))
+        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.E))
         {
             other.transform.position = newFloorPosition;
         }
-        if (other != null && other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
+        else if (other.CompareTag("NPC"))
         {
-            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
-            other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
-            other.transform.position = newFloorPosition;
-        }
-        if (other != null && other.tag == "NPCNoBaby" && other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel)
-        {
-            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
-            other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel = false;
-            other.transform.position = newFloorPosition;
+            NPCBehaviour npc = other.GetComponent<NPCBehaviour>();
+            if (npc != null && npc.wantChangeLevel && npc.ischanginglevel && npc.cooldown <= 0)
+            {
+                StartCoroutine(ChangeFloorForNPC(npc));
+            }
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    IEnumerator ChangeFloorForNPC(NPCBehaviour npc)
     {
-        if (other != null && other.tag == "NPC" && other.GetComponent<NPCBehaviour>().wantChangeLevel)
-        {
-            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
-            other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
-            other.transform.position = newFloorPosition;
-        }
-        if (other != null && other.tag == "NPCNoBaby" && other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel)
-        {
-            // StartCoroutine(ChangeLevelWithDelay(other.gameObject));
-            other.GetComponent<NPCBehaviour_NoBaby>().wantChangeLevel = false;
-            other.transform.position = newFloorPosition;
-        }
-    }
 
-    // IEnumerator ChangeLevelWithDelay(GameObject other)
-    // {
-    //     other.GetComponent<SpriteRenderer>().enabled = false;
-    //     yield return new WaitForSeconds(1.5f);
-    //     other.GetComponent<NPCBehaviour>().wantChangeLevel = false;
-    //     other.transform.position = newFloorPosition;
-    //     other.GetComponent<SpriteRenderer>().enabled = true;
-    // }
+        npc.transform.position = newFloorPosition;
+
+        // Tambahkan cooldown
+        npc.cooldown = NPC_COOLDOWN;
+
+        // Tunggu sebentar sebelum mengizinkan NPC bergerak lagi
+        yield return new WaitForSeconds(0.5f);
+        npc.ischanginglevel = false;
+    }
 }
