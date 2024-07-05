@@ -32,6 +32,4 @@ public class VolumeController : MonoBehaviour
         AudioManager.Instance.sfxVolume(sfxSlider.value);
         PlayerPrefs.SetFloat("sfxVolume", sfxSlider.value);
     }
-
-
 }

@@ -224,7 +224,7 @@ public class NPCBehaviour : MonoBehaviour
             if (isSuspicious)
             {
                 Vector2 direction = new Vector2(lastKnownPlayerPosition.x - transform.position.x, 0).normalized;
-                GetComponent<Rigidbody2D>().velocity = direction * speed;
+                GetComponent<Rigidbody2D>().velocity = direction * speed * 1.15f;
                 if (direction.x < 0)
                 {
                     GetComponent<SpriteRenderer>().flipX = true;
@@ -241,18 +241,18 @@ public class NPCBehaviour : MonoBehaviour
                 {
                     currentWaypoint = UnityEngine.Random.Range(0, waypoints.Length);
                 }
+                if (baby != null && baby.GetComponent<BabyScript>().isSleeping)
+                {
+                    patrolling();
+                }
+
+                if (wantChangeLevel)
+                {
+                    ChangeLevel();
+                }
             }
         }
         wasSuspicious = isSuspicious;
-        if (baby != null && baby.GetComponent<BabyScript>().isSleeping)
-        {
-            patrolling();
-        }
-
-        if (wantChangeLevel)
-        {
-            ChangeLevel();
-        }
     }
 
     void patrolling()

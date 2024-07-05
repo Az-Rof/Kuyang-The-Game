@@ -26,76 +26,71 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
     //public GameObject baby;
 
     // Keputusan untuk memakai tangga/lift ChangeFloor
+    // Keputusan untuk memakai tangga/lift ChangeFloor
     public bool wantChangeLevel;
-    List<Vector2> connectFloorPositions;
+    public bool ischanginglevel;
+    public float cooldown = 0;
+
 
 
     void Start()
     {
         animator = GetComponent<Animator>();
-        connectFloorPositions = new List<Vector2>();
-        ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
-        foreach (ChangeFloor changeFloor in changeFloors)
-        {
-            connectFloorPositions.Add(changeFloor.connectFloor.transform.position);
-        }
+
     }
 
 
     void Update()
     {
-        if (!wantChangeLevel)
+        NPCSus();
+        Animator();
+        if (cooldown > 0)
         {
-            NPCSus();
+            cooldown -= Time.deltaTime;
         }
-
-        if (!isSuspicious)
-        {
-            patrolling();
-        }
-
-        if (wantChangeLevel)
-        {
-            ChangeLevel();
-        }
-
         Animator();
     }
 
     void ChangeLevel()
     {
-        ChangeFloor[] changeFloors = FindObjectsOfType<ChangeFloor>();
-        Array.Sort(changeFloors, (a, b) => a.order.CompareTo(b.order));
-        if (Mathf.Abs(waypoints[currentWaypoint].transform.position.y - transform.position.y) >= 3f)
+        if (Mathf.Abs(waypoints[currentWaypoint].transform.position.y - transform.position.y) >= 5f)
         {
-            ChangeFloor closestChangeFloor = null;
-            float closestDistance = float.MaxValue;
+            List<ChangeFloor> changeFloorsList = new List<ChangeFloor>(FindObjectsOfType<ChangeFloor>());
+            changeFloorsList.Sort((a, b) => a.connectFloor.transform.position.y.CompareTo(b.connectFloor.transform.position.y));
 
-            foreach (ChangeFloor changeFloor in changeFloors)
+            // Temukan ChangeFloor dengan posisi connectFloor yang paling dekat dengan transform.position.y dan memiliki perbedaan y <= 3f
+            // dan connectFloor.y mengarah ke arah waypoints.y
+            ChangeFloor nearestChangeFloor = null;
+            float nearestDistance = float.MaxValue;
+            foreach (ChangeFloor changeFloor in changeFloorsList)
             {
-                if (connectFloorPositions.Contains(changeFloor.connectFloor.transform.position))
+                float distance = Mathf.Abs(changeFloor.connectFloor.transform.position.y - transform.position.y);
+                bool isSameDirection = (waypoints[currentWaypoint].transform.position.y - transform.position.y) * (changeFloor.connectFloor.transform.position.y - transform.position.y) > 0;
+                if (distance <= 3f && distance < nearestDistance && isSameDirection)
                 {
-                    float distance = Vector2.Distance(changeFloor.transform.position, transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestChangeFloor = changeFloor;
-                    }
+                    nearestChangeFloor = changeFloor;
+                    nearestDistance = distance;
                 }
             }
 
-            if (closestChangeFloor != null)
+            // Jika ChangeFloor ditemukan, arahkan NPC ke arah itu
+            if (nearestChangeFloor != null)
             {
-                Vector2 direction = new Vector2(closestChangeFloor.transform.position.x - transform.position.x, 0).normalized;
+                Vector2 direction = new Vector2(nearestChangeFloor.transform.position.x - transform.position.x, 0).normalized;
                 GetComponent<Rigidbody2D>().velocity = direction * speed;
-                if (direction.x < 0)
+                GetComponent<SpriteRenderer>().flipX = direction.x < 0;
+                // Jika perbedaan antara nearestChangeFloor.transform.position.x dan transform.position.x kurang dari atau sama dengan 2f
+                if (Mathf.Abs(nearestChangeFloor.transform.position.x - transform.position.x) <= 2f)
                 {
-                    GetComponent<SpriteRenderer>().flipX = true;
+                    ischanginglevel = true;
                 }
-                else if (direction.x > 0)
-                {
-                    GetComponent<SpriteRenderer>().flipX = false;
-                }
+            }
+            else
+            {
+                // Jika tidak ada ChangeFloor yang memenuhi kriteria, arahkan NPC ke arah waypoint berikutnya
+                Vector2 direction = new Vector2(waypoints[currentWaypoint].transform.position.x - transform.position.x, 0).normalized;
+                GetComponent<Rigidbody2D>().velocity = direction * speed;
+                GetComponent<SpriteRenderer>().flipX = direction.x < 0;
             }
         }
     }
@@ -128,7 +123,7 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
             if (isSuspicious)
             {
                 Vector2 direction = new Vector2(lastKnownPlayerPosition.x - transform.position.x, 0).normalized;
-                GetComponent<Rigidbody2D>().velocity = direction * speed;
+                GetComponent<Rigidbody2D>().velocity = direction * speed * 1.15f;
                 if (direction.x < 0)
                 {
                     GetComponent<SpriteRenderer>().flipX = true;
@@ -137,6 +132,7 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
                 {
                     GetComponent<SpriteRenderer>().flipX = false;
                 }
+                wantChangeLevel = false;
             }
             else
             {
@@ -145,9 +141,15 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
                 {
                     currentWaypoint = UnityEngine.Random.Range(0, waypoints.Length);
                 }
+                patrolling();
+                if (wantChangeLevel)
+                {
+                    ChangeLevel();
+                }
             }
         }
         wasSuspicious = isSuspicious;
+
     }
 
     void patrolling()
@@ -155,7 +157,6 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
         // Jika NPC sedang idle
         if (isIdle)
         {
-
             idleTimer += Time.deltaTime; // Tambahkan waktu ke penghitung idle
 
             // Jika durasi idle telah tercapai
@@ -187,9 +188,11 @@ public class NPCBehaviour_NoBaby : MonoBehaviour
             if (Mathf.Abs(transform.position.y - targetPosition.y) >= 2f)
             {
                 wantChangeLevel = true;
+
             }
             else
             {
+                wantChangeLevel = false;
                 transform.position = new Vector2(Mathf.MoveTowards(transform.position.x, targetPosition.x, speed * Time.deltaTime), transform.position.y);
                 //GetComponent<Rigidbody2D>().velocity = direction * speed;
             }

@@ -26,12 +26,20 @@ public class ChangeFloor : MonoBehaviour
         {
             other.transform.position = newFloorPosition;
         }
-        else if (other.CompareTag("NPC"))
+        if (other.CompareTag("NPC"))
         {
             NPCBehaviour npc = other.GetComponent<NPCBehaviour>();
             if (npc != null && npc.wantChangeLevel && npc.ischanginglevel && npc.cooldown <= 0)
             {
                 StartCoroutine(ChangeFloorForNPC(npc));
+            }
+        }
+        else if (other.CompareTag("NPCNoBaby"))
+        {
+            NPCBehaviour_NoBaby npcnb = other.GetComponent<NPCBehaviour_NoBaby>();
+            if (npcnb != null && npcnb.wantChangeLevel && npcnb.ischanginglevel && npcnb.cooldown <= 0)
+            {
+                StartCoroutine(ChangeFloorForNPCNB(npcnb));
             }
         }
     }
@@ -47,5 +55,17 @@ public class ChangeFloor : MonoBehaviour
         // Tunggu sebentar sebelum mengizinkan NPC bergerak lagi
         yield return new WaitForSeconds(0.5f);
         npc.ischanginglevel = false;
+    }
+
+    IEnumerator ChangeFloorForNPCNB(NPCBehaviour_NoBaby npcnb)
+    {
+        npcnb.transform.position = newFloorPosition;
+
+        // Tambahkan cooldown
+        npcnb.cooldown = NPC_COOLDOWN;
+
+        // Tunggu sebentar sebelum mengizinkan NPC bergerak lagi
+        yield return new WaitForSeconds(0.5f);
+        npcnb.ischanginglevel = false;
     }
 }
