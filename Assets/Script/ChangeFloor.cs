@@ -8,7 +8,8 @@ public class ChangeFloor : MonoBehaviour
     Vector2 newFloorPosition;
     public int order;
     private const float NPC_COOLDOWN = 2f;
-    private Dictionary<NPCBehaviour, float> npcCooldowns = new Dictionary<NPCBehaviour, float>();
+
+    bool playerInteract;
 
     void Start()
     {
@@ -17,16 +18,24 @@ public class ChangeFloor : MonoBehaviour
 
     void Update()
     {
+        playerchangefloor();
+    }
 
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            playerInteract = true;
+        }
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.E))
+        if (other.CompareTag("Player"))
         {
-            other.transform.position = newFloorPosition;
+            playerInteract = true;
         }
-        if (other.CompareTag("NPC"))
+        else if (other.CompareTag("NPC"))
         {
             NPCBehaviour npc = other.GetComponent<NPCBehaviour>();
             if (npc != null && npc.wantChangeLevel && npc.ischanginglevel && npc.cooldown <= 0)
@@ -34,19 +43,18 @@ public class ChangeFloor : MonoBehaviour
                 StartCoroutine(ChangeFloorForNPC(npc));
             }
         }
-        else if (other.CompareTag("NPCNoBaby"))
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
         {
-            NPCBehaviour_NoBaby npcnb = other.GetComponent<NPCBehaviour_NoBaby>();
-            if (npcnb != null && npcnb.wantChangeLevel && npcnb.ischanginglevel && npcnb.cooldown <= 0)
-            {
-                StartCoroutine(ChangeFloorForNPCNB(npcnb));
-            }
+            playerInteract = false;
         }
     }
 
     IEnumerator ChangeFloorForNPC(NPCBehaviour npc)
     {
-
         npc.transform.position = newFloorPosition;
 
         // Tambahkan cooldown
@@ -57,15 +65,12 @@ public class ChangeFloor : MonoBehaviour
         npc.ischanginglevel = false;
     }
 
-    IEnumerator ChangeFloorForNPCNB(NPCBehaviour_NoBaby npcnb)
+    void playerchangefloor()
     {
-        npcnb.transform.position = newFloorPosition;
-
-        // Tambahkan cooldown
-        npcnb.cooldown = NPC_COOLDOWN;
-
-        // Tunggu sebentar sebelum mengizinkan NPC bergerak lagi
-        yield return new WaitForSeconds(0.5f);
-        npcnb.ischanginglevel = false;
+        if (Input.GetKeyDown(KeyCode.E) && playerInteract)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            playerObject.transform.position = newFloorPosition;
+        }
     }
 }

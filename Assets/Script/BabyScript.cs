@@ -1,6 +1,3 @@
-using System.Timers;
-using System;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,105 +11,142 @@ public class BabyScript : MonoBehaviour
     public float minAwakeDuration = 5f; // Minimum awake duration in seconds
     public float maxAwakeDuration = 15f; // Maximum awake duration in seconds
     private float sleepTimer = 0f;
-    private float awakeTimer = 0f; // Timer for when the baby is awake
 
-    // [SerializeField] AudioClip clip;
-    // AudioSource CrySFX;
+    bool playerInteract;
 
     Light2D light2D;
     public bool isKidnapped = false;
 
     Animator animator;
 
+    // --- Cached References ---
+    private Transform playerTransform;
+    private GameObject buttonE;
+
     void Start()
     {
         sleepTimer = UnityEngine.Random.Range(minSleepDuration, maxSleepDuration);
         light2D = GetComponent<Light2D>();
-        // CrySFX = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
 
+        // Cache player transform
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            playerTransform = playerObject.transform;
+        }
+
+        // Cache ButtonE game object
+        Transform buttonETransform = transform.Find("ButtonE");
+        if (buttonETransform != null)
+        {
+            buttonE = buttonETransform.gameObject;
+            buttonE.SetActive(false); // Make sure it's off at the start
+        }
+
+        UpdateState();
     }
 
     void Update()
     {
-
-        if (isSleeping)
-        {
-            sleepTimer -= Time.deltaTime;
-
-
-            if (sleepTimer <= 0)
-            {
-                isSleeping = false;
-                awakeTimer = UnityEngine.Random.Range(minAwakeDuration, maxAwakeDuration);
-            }
-
-            AudioManager.Instance.playLSFX("Baby Cry");
-            // looping playlsfx
-            AudioManager.Instance.LsfxSource.loop = true;
-        }
-        else if (!isSleeping)
-        {
-            awakeTimer -= Time.deltaTime;
-
-            if (awakeTimer <= 0)
-            {
-                isSleeping = true;
-                sleepTimer = UnityEngine.Random.Range(minSleepDuration, maxSleepDuration);
-            }
-
-            //AudioManager.Instance.LsfxSource.Stop();
-            //AudioManager.Instance.LsfxSource.loop = false;
-
-        }
-
+        playerKidnapp();
         if (isKidnapped)
         {
-            transform.position = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().transform.position;
-            isSleeping = false;
+            if (playerTransform != null)
+            {
+                transform.position = playerTransform.position;
+            }
+            return; // No need to process sleep/awake logic if kidnapped
         }
-        Animator();
 
+        sleepTimer -= Time.deltaTime;
+
+        if (sleepTimer <= 0)
+        {
+            isSleeping = !isSleeping;
+            UpdateState();
+        }
     }
     void OnTriggerStay2D(Collider2D other)
     {
-        bool isHiding = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().isHiding;
-        if (other.tag == "Player" && Input.GetKeyDown(KeyCode.E))
+        if (isKidnapped) return;
+
+        if (other.CompareTag("Player"))
         {
-            transform.Find("ButtonE").gameObject.SetActive(false);
-            isKidnapped = true;
-            light2D.enabled = false;
+            playerInteract = true;
         }
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (isKidnapped) return;
+
+        if (other.CompareTag("Player"))
         {
-            transform.Find("ButtonE").gameObject.SetActive(true);
+            playerInteract = true;
+            if (buttonE != null)
+            {
+                buttonE.SetActive(true);
+            }
             light2D.enabled = true;
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
-            transform.Find("ButtonE").gameObject.SetActive(false);
+            playerInteract = false;
+            if (buttonE != null)
+            {
+                buttonE.SetActive(false);
+            }
             light2D.enabled = false;
         }
     }
 
-    void Animator()
+    void UpdateState()
     {
-        // Jika NPC sedang idle
         if (isSleeping)
         {
-            animator.SetBool("isSleeping", true);
-
+            sleepTimer = UnityEngine.Random.Range(minSleepDuration, maxSleepDuration);
+            if (this.gameObject.activeSelf)
+            {
+                AudioManager.Instance.LsfxSource.Stop(); // Stop previous sound if any
+                AudioManager.Instance.LsfxSource.loop = false;
+            }
         }
-        else // Jika NPC tidak idle (sedang berjalan)
+        else // isAwake
         {
-            animator.SetBool("isSleeping", false);
+            sleepTimer = UnityEngine.Random.Range(minAwakeDuration, maxAwakeDuration);
+            if (!AudioManager.Instance.LsfxSource.isPlaying || AudioManager.Instance.LsfxSource.clip.name != "Baby Cry")
+            {
+                AudioManager.Instance.playLSFX("Baby Cry");
+                AudioManager.Instance.LsfxSource.loop = true;
+            }
         }
+
+        // Update animator
+        animator.SetBool("isSleeping", isSleeping);
+    }
+
+    void playerKidnapp()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && playerInteract && !isKidnapped)
+        {
+            isKidnapped = true;
+            isSleeping = false; // Baby is awake when kidnapped
+            UpdateState();
+
+            if (buttonE != null)
+            {
+                buttonE.SetActive(false);
+            }
+            light2D.enabled = false;
+        }
+    }
+
+    public void StopBabyCry()
+    {
+        AudioManager.Instance.LsfxSource.Stop();
     }
 }

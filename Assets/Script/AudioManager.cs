@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,6 +12,10 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance;
     public Sound[] musicSounds, sfxSounds, Lsfxsounds;
     public AudioSource musicSource, sfxSource, LsfxSource;
+
+    private Dictionary<string, Sound> musicSoundsDict;
+    private Dictionary<string, Sound> sfxSoundsDict;
+    private Dictionary<string, Sound> lsfxSoundsDict;
 
     public void Awake()
     {
@@ -23,24 +28,24 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        // Initialize dictionaries for fast lookups
+        musicSoundsDict = musicSounds.ToDictionary(s => s.name, s => s);
+        sfxSoundsDict = sfxSounds.ToDictionary(s => s.name, s => s);
+        lsfxSoundsDict = Lsfxsounds.ToDictionary(s => s.name, s => s);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        if (SceneManager.GetActiveScene().name == "CutScene_Intro")
-        {
-            musicSource.Stop();
-            LsfxSource.Stop();
-        }
-        if (GameObject.FindWithTag("Baby") == null)
-        {
-            LsfxSource.Stop();
-        }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    public void Start()
+    // This method is called every time a scene is loaded
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Retrieve the music and sfx volumes from PlayerPrefs if they exist
+        // Load volume settings every time, as AudioSources might be new
         if (PlayerPrefs.HasKey("musicVolume"))
         {
             // If the music volume is found, set it
@@ -51,50 +56,48 @@ public class AudioManager : MonoBehaviour
             // If the sfx volume is found, set it
             sfxSource.volume = PlayerPrefs.GetFloat("sfxVolume");
         }
-        // Check which scene is currently active
-        if (SceneManager.GetActiveScene().name == "Main Menu")
+
+        // Scene-specific audio logic
+        if (scene.name == "Main Menu")
         {
-            // If the scene is the main menu, play the Main Menu Theme music
             playMusic("MainMenu Music");
             LsfxSource.Stop();
         }
-        else if (SceneManager.GetActiveScene().name == "CutScene_Intro")
+        else if (scene.name == "CutScene_Intro")
         {
             musicSource.Stop();
             LsfxSource.Stop();
         }
-        else
-        {
-            // If the scene is not the main menu, do not play music
-        }
     }
+
+    public void Start() { /* Start can be kept for initialization if needed, but OnSceneLoaded is better for scene-specific logic */ }
+
     /// Plays the music with the specified name.
     /// <param name="name">The name of the music sound.</param>
     public void playMusic(string name)
     {
-        // Find the sound with the specified name
-        Sound s = Array.Find(musicSounds, x => x.name == name);
+        if (!musicSoundsDict.TryGetValue(name, out Sound s))
+        {
+            Debug.LogWarning($"Music '{name}' not found in dictionary!");
+            return;
+        }
 
-        // If the sound is not found, log a message
-        if (s == null)
+        if (s.audioClip == null)
         {
-            Debug.Log("Sound Not Found");
+            Debug.LogWarning($"Music '{name}' has no AudioClip assigned!");
+            return;
         }
-        else
-        {
-            // Set the clip of the music source to the audio clip of the sound
-            musicSource.clip = s.audioClip;
-            // Play the music
-            musicSource.Play();
-        }
+
+        musicSource.clip = s.audioClip;
+        musicSource.Play();
     }
+
 
     // Plays a sound effect based on the passed name. If the sound is not found in the musicSounds array, logs a message. 
     // Otherwise, plays the found sound effect using the sfxSource.
     public void playSFX(string name)
     {
-        Sound s = Array.Find(sfxSounds, x => x.name == name);
-        if (s == null)
+        if (!sfxSoundsDict.TryGetValue(name, out Sound s))
         {
             Debug.Log("Sound Not Found");
         }
@@ -107,8 +110,7 @@ public class AudioManager : MonoBehaviour
     }
     public void playLSFX(string name)
     {
-        Sound s = Array.Find(Lsfxsounds, x => x.name == name);
-        if (s == null)
+        if (!lsfxSoundsDict.TryGetValue(name, out Sound s))
         {
             Debug.Log("Sound Not Found");
         }
@@ -121,8 +123,7 @@ public class AudioManager : MonoBehaviour
 
     public void stopSFX(string name)
     {
-        Sound s = Array.Find(sfxSounds, x => x.name == name);
-        if (s == null)
+        if (!sfxSoundsDict.TryGetValue(name, out Sound s))
         {
             Debug.Log("Sound Not Found");
         }

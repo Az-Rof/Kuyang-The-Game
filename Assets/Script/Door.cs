@@ -1,17 +1,29 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
+// This script controls the behavior of a door (window).
 public class Door : MonoBehaviour
 {
     public Collider2D colliderToDeactivate;
     public GameObject Open, Close;
+
+    bool playerInteract;
     void Start()
     {
         colliderToDeactivate = GetComponent<Collider2D>();
     }
+
+
+    void Update()
+    {
+        PlayerInteracted();
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
+        if (other.CompareTag("Player"))
+        {
+            playerInteract = true;
+        }
+        if (other.CompareTag("NPC"))
         {
             colliderToDeactivate.enabled = false;
             Close.SetActive(false);
@@ -21,7 +33,34 @@ public class Door : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other.tag == "Player" && Input.GetKeyDown(KeyCode.E))
+        if (other.CompareTag("Player"))
+        {
+            playerInteract = true;
+        }
+        if (other.CompareTag("NPC"))
+        {
+            colliderToDeactivate.enabled = false;
+            Close.SetActive(false);
+            Open.SetActive(true);
+        }
+    }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("NPC"))
+        {
+            colliderToDeactivate.enabled = true;
+            Close.SetActive(true);
+            Open.SetActive(false);
+        }
+        if (other.CompareTag("Player"))
+        {
+            playerInteract = false;
+        }
+    }
+
+    void PlayerInteracted()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && playerInteract)
         {
             if (colliderToDeactivate.isActiveAndEnabled)
             {
@@ -35,26 +74,6 @@ public class Door : MonoBehaviour
                 Close.SetActive(true);
                 Open.SetActive(false);
             }
-
         }
-        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
-        {
-            colliderToDeactivate.enabled = false;
-            Close.SetActive(false);
-            Open.SetActive(true);
-        }
-    }
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.tag == "NPC" || other.CompareTag("NPCNoBaby"))
-        {
-            colliderToDeactivate.enabled = true;
-            Close.SetActive(true);
-            Open.SetActive(false);
-        }
-
     }
 }
-
-
-
